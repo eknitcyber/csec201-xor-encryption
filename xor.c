@@ -2,9 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-void xorEncrypt(char *text, char *key) {
+void xorEncrypt(char *text, int length, char *key) {
     int keyLen = strlen(key);
-    for (int i = 0; text[i] != '\0'; i++) {
+
+    for (int i = 0; i < length; i++) {
         text[i] ^= key[i % keyLen];
     }
 }
@@ -14,7 +15,7 @@ int main() {
     printf("Enter 'e' to encrypt or 'd' to decrypt: ");
     scanf(" %c", &choice);
     getchar();
-    
+
     if (choice == 'e') {
         char message[100];
         char filename[50];
@@ -22,7 +23,7 @@ int main() {
 
         printf("Enter the message to encrypt: ");
         fgets(message, sizeof(message), stdin);
-        message[strcspn(message, "\n")] = '\0'; // Remove newline
+        message[strcspn(message, "\n")] = '\0';
 
         printf("Enter the filename to save encrypted data: ");
         scanf("%s", filename);
@@ -30,15 +31,17 @@ int main() {
         printf("Enter the encryption key: ");
         scanf("%s", key);
 
-        FILE *file = fopen(filename, "w");
+        FILE *file = fopen(filename, "wb");
         if (file == NULL) {
             perror("Error opening file for writing");
             return 1;
         }
 
-        xorEncrypt(message, key);
-        fprintf(file, "%s", message);
+        int messageLength = strlen(message);
+        xorEncrypt(message,messageLength, key);
+        fwrite(message, sizeof(char), messageLength, file);
         fclose(file);
+
     } else if (choice == 'd') {
         char filename[50];
         char key[20];
@@ -49,7 +52,7 @@ int main() {
         printf("Enter the decryption key: ");
         scanf("%s", key);
 
-        FILE *file = fopen(filename, "r");
+        FILE *file = fopen(filename, "rb");
         if (file == NULL) {
             perror("Error opening file for reading");
             return 1;
@@ -66,13 +69,10 @@ int main() {
             return 1;
         }
 
-        fread(encryptedData, sizeof(char), fileSize, file);
-        encryptedData[fileSize] = '\0';
+        fread(encryptedData, 1, fileSize, file);
         fclose(file);
-
-        xorEncrypt(encryptedData, key);
-
-        printf("Decrypted message: %s\n", encryptedData);
+        xorEncrypt(encryptedData, fileSize, key);
+        printf("Decrypted message: %.*s\n", (int)fileSize, encryptedData);
 
         free(encryptedData);
     } else {
