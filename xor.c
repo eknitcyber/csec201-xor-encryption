@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 void xorEncrypt(char *text, char *key) {
     int keyLen = strlen(key);
@@ -12,7 +13,8 @@ int main() {
     char choice;
     printf("Enter 'e' to encrypt or 'd' to decrypt: ");
     scanf(" %c", &choice);
-
+    getchar();
+    
     if (choice == 'e') {
         char message[100];
         char filename[50];
