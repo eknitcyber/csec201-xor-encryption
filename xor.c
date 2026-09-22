@@ -23,13 +23,29 @@ int main() {
 
         printf("Enter the message to encrypt: ");
         fgets(message, sizeof(message), stdin);
+
+        if (strchr(message, '\n') == NULL) {
+            int ch;
+            while ((ch = getchar()) != '\n' && ch != EOF) {
+            }
+            printf("Error: Message is too long.\n");
+            return 1;
+        }
+
         message[strcspn(message, "\n")] = '\0';
 
         printf("Enter the filename to save encrypted data: ");
         scanf("%s", filename);
 
         printf("Enter the encryption key: ");
-        scanf("%s", key);
+        getchar();
+        fgets(key, sizeof(key), stdin);
+        key[strcspn(key, "\n")] = '\0';
+
+        if (strlen(key) == 0) {
+            printf("Error: Key cannot be empty.\n");
+            return 1;
+        }
 
         FILE *file = fopen(filename, "wb");
         if (file == NULL) {
@@ -50,7 +66,14 @@ int main() {
         scanf("%s", filename);
 
         printf("Enter the decryption key: ");
-        scanf("%s", key);
+        getchar();
+        fgets(key, sizeof(key), stdin);
+        key[strcspn(key, "\n")] = '\0';
+
+        if (strlen(key) == 0) {
+            printf("Error: Key cannot be empty.\n");
+            return 1;
+        }
 
         FILE *file = fopen(filename, "rb");
         if (file == NULL) {
